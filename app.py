@@ -14,15 +14,19 @@ def home():
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        user_message = request.json.get('message')
-        print(f"Received message: {user_message}")
+        data = request.get_json()
+        message = data.get('message')
+        if not message:
+            return jsonify({'error': 'No message provided'}), 400
+
+        print(f"Received message: {message}")
 
         # Use the new OpenAI API interface
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",  # Use gpt-3.5-turbo or any other available model
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_message},
+                {"role": "user", "content": message},
             ]
         )
 
